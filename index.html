@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071019">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Search runners across all five Rut 2026 distances and open each recorded result on its official course.">
+  <title>Course Signal · Rut 2026 results</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="styles.css?v=1.9.1">
+  <script defer src="vendor/leaflet/leaflet.js"></script>
+  <script defer src="config.js?v=1.9.1"></script>
+  <script defer src="race-logic.js?v=1.9.1"></script>
+  <script defer src="elevation-profile.js?v=1.9.1"></script>
+  <script defer src="course_signal_shell.js?v=1.1.0"></script>
+  <script defer src="results_model.js?v=1.0.0"></script>
+  <script defer src="results_view.js?v=1.1.0"></script>
+  <script defer src="app.js?v=1.9.1"></script>
+</head>
+<body>
+  <main id="courseSignalLanding" class="landing-page">
+    <header class="landing-topbar">
+      <a class="shell-brand" href="/" aria-label="Course Signal home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span class="shell-brand-copy"><strong>COURSE SIGNAL</strong><span>Rut 28K 2026</span></span>
+      </a>
+      <span class="landing-topbar-note">Live course · race recap</span>
+    </header>
+    <section class="landing-content" aria-labelledby="landingTitle">
+      <div class="landing-hero">
+        <p class="landing-kicker">ROAD · CROSS COUNTRY · TRAIL</p>
+        <h1 id="landingTitle">Course Signal</h1>
+        <p class="landing-lede">Follow the Rut 28K live or read back the 2026 race.</p>
+      </div>
+      <section class="catalog-search-panel" role="search" aria-labelledby="catalogSearchTitle">
+        <div class="catalog-search-heading">
+          <div>
+            <p class="landing-kicker">RACE CATALOG</p>
+            <h2 id="catalogSearchTitle">Find a race series</h2>
+          </div>
+          <p>Search by race, event, or place.</p>
+        </div>
+        <div class="catalog-fields">
+          <label class="catalog-query-field" for="catalogSearch">
+            <span>Race search</span>
+            <input id="catalogSearch" type="search" autocomplete="off" enterkeyhint="search" placeholder="Try “Rut” or “Bozeman”" aria-describedby="catalogStatus">
+          </label>
+          <label class="catalog-year-field" for="catalogYear">
+            <span>Year</span>
+            <input id="catalogYear" type="number" inputmode="numeric" min="2000" max="2100" step="1" placeholder="All" aria-describedby="catalogStatus">
+          </label>
+        </div>
+        <p id="catalogStatus" class="catalog-status" role="status" aria-live="polite">Type at least 2 characters to search race series, places, and events.</p>
+      </section>
+      <section id="catalogResults" class="catalog-results" aria-label="Race search results"></section>
+    </section>
+  </main>
+
+  <main id="courseSignalRouteLoading" class="route-state" aria-labelledby="routeLoadingTitle" hidden>
+    <div class="route-state-card">
+      <div class="loading-ring" aria-hidden="true"></div>
+      <p class="landing-kicker">COURSE SIGNAL</p>
+      <h1 id="routeLoadingTitle">Loading event</h1>
+      <p id="routeLoadingStatus" role="status">Checking event status…</p>
+      <a id="routeLoadingHome" class="shell-action" href="/" hidden>Back to race search</a>
+    </div>
+  </main>
+
+  <main id="courseSignalResults" class="results-page" hidden>
+    <header class="results-topbar">
+      <a class="shell-brand" href="/" aria-label="Course Signal home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span class="shell-brand-copy"><strong>COURSE SIGNAL</strong><span>Rut 2026 results</span></span>
+      </a>
+      <nav class="race-mode-switch" aria-label="Event mode">
+        <a id="resultsLiveModeLink" href="/">Live</a>
+        <a id="resultsResultsModeLink" href="/">Results</a>
+      </nav>
+      <a class="results-search-link" href="/">Rut 2026 results</a>
+    </header>
+    <section class="results-content" aria-labelledby="resultsEventName">
+      <section id="resultsRunnerLead" class="results-runner-lead" aria-label="Selected runner overview" hidden></section>
+      <div id="resultsOverview" class="results-overview-grid">
+        <header class="results-event-hero">
+          <p class="landing-kicker">PUBLISHED RESULT · <span id="resultsEventContext"></span></p>
+          <p id="resultsRaceName" class="results-race-name">The Rut</p>
+          <h1 id="resultsEventName">28K 2026 results &amp; analysis</h1>
+          <p id="resultsEventMeta" class="results-event-meta">Published event details load with results.</p>
+          <div id="resultsCapabilities" class="results-capabilities" aria-label="Event capabilities"></div>
+        </header>
+
+        <section class="results-lookup" aria-labelledby="resultsLookupTitle">
+          <div class="results-lookup-heading">
+            <div>
+              <p class="results-section-kicker">ALL FIVE RUT · 2026 RESULTS</p>
+              <h2 id="resultsLookupTitle">Find a runner</h2>
+            </div>
+            <p>Search the published 50K, 28K, 21K, 11K, and VK results together.</p>
+          </div>
+          <form id="resultsSearchForm" class="results-search-form" role="search" novalidate>
+            <label for="resultsRunnerSearch">Runner name or bib</label>
+            <div class="results-search-row">
+              <input id="resultsRunnerSearch" type="search" autocomplete="off" enterkeyhint="search" minlength="2" maxlength="100" placeholder="Name or bib number" aria-autocomplete="list" aria-controls="resultsMatches" aria-describedby="resultsSearchPrivacy resultsStatus">
+              <button id="resultsSearchSubmit" type="submit">Search results</button>
+            </div>
+          </form>
+          <p id="resultsSearchPrivacy" class="results-privacy-note">Search text stays in this field while you use the page. It is never added to the page URL or saved by Course Signal.</p>
+          <p id="resultsStatus" class="results-status" role="status" aria-live="polite">Type at least 2 characters to search all five Rut 2026 distances.</p>
+          <div id="resultsMatches" class="results-matches" role="listbox" aria-label="Published runner matches"></div>
+        </section>
+      </div>
+
+      <section id="resultsDetail" class="results-detail" aria-label="Selected runner result and analysis" hidden></section>
+    </section>
+  </main>
+
+  <div id="app" class="app is-loading" hidden>
+    <header class="topbar">
+      <a class="brand-block shell-home-link" href="/" aria-label="Course Signal home">
+        <div class="brand-mark" aria-hidden="true">C</div>
+        <div>
+          <div class="brand-title">COURSE SIGNAL</div>
+          <div id="liveEventContext" class="brand-subtitle">Live course and runner signals</div>
+        </div>
+      </a>
+      <nav id="raceModeSwitch" class="race-mode-switch" aria-label="Event mode">
+        <a id="liveModeLink" href="/">Live</a>
+        <a id="resultsModeLink" href="/">Results</a>
+      </nav>
+      <div class="topbar-status" aria-live="polite">
+        <span id="connectionDot" class="connection-dot"></span>
+        <span id="connectionText">Connecting</span>
+        <span class="status-separator">·</span>
+        <span id="mountainTime">--:-- MT</span>
+      </div>
+      <button id="mapRepairButton" class="icon-button" type="button" aria-label="Retry map" title="Retry map">↻</button>
+      <button id="fullscreenButton" class="icon-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg>
+      </button>
+    </header>
+
+    <main id="workspace" class="map-shell workspace" data-layout="split">
+      <section id="infoPane" class="workspace-pane info-pane" aria-label="Runner information">
+        <header id="infoHeading" class="pane-heading info-heading">
+          <strong>Info</strong>
+          <button id="finishToggle" type="button" class="finish-toggle" aria-controls="finishPanel" aria-expanded="false">Finish watch · 10</button>
+          <button id="infoExpandButton" class="pane-expand" type="button" aria-controls="infoPane" aria-expanded="false">Expand info</button>
+        </header>
+        <div id="infoContent" class="info-content" tabindex="0" role="region" aria-label="Runner information; scroll for all controls">
+      <nav id="courseBar" class="course-bar" aria-label="Course filter"></nav>
+
+      <aside id="runnerCard" class="runner-card" aria-live="polite">
+        <div id="runnerCardEmpty" class="runner-card-empty">
+          <div class="pulse-symbol" aria-hidden="true"><span></span></div>
+          <div>
+            <strong>Auto-director is live</strong>
+            <p>Rotating between the front of the field, fresh GPS signals, and random on-course runners.</p>
+          </div>
+        </div>
+        <div id="runnerCardContent" hidden>
+          <div class="runner-card-head">
+            <div>
+              <div id="runnerKicker" class="runner-kicker">21K · BIB 0000</div>
+              <h1 id="runnerName">Runner Name</h1>
+            </div>
+            <span id="sourceBadge" class="source-badge">GPS</span>
+          </div>
+          <section class="recorded-checkin" aria-label="Last recorded check-in">
+            <h2>■ Last recorded check-in</h2>
+            <strong id="runnerRecordedName">—</strong>
+            <div id="runnerRecordedClock" class="recorded-clock"></div>
+            <span id="runnerRecordedAge" class="recorded-age"></span>
+            <p id="runnerRecordedSource" class="recorded-source"></p>
+            <p id="runnerRecordedAnchor" class="recorded-source"></p>
+          </section>
+          <section class="next-checkpoint" aria-label="Current segment and next checkpoint prediction">
+            <dl class="runner-metrics next-checkpoint-metrics">
+              <div class="next-checkpoint-name"><dt>Current segment</dt><dd id="runnerCurrentSegment">—</dd></div>
+              <div class="next-checkpoint-name"><dt>Next checkpoint</dt><dd id="runnerNextCheckpoint">—</dd></div>
+              <div><dt>Estimated arrival</dt><dd id="runnerNextArrival">—</dd></div>
+              <div><dt>Time remaining</dt><dd id="runnerNextRemaining">—</dd></div>
+            </dl>
+            <p id="runnerNextNote" class="next-checkpoint-note" hidden></p>
+            <button id="timelineButton" class="timeline-button" type="button" aria-haspopup="dialog" aria-controls="detailsDialog">All checkpoint times &amp; forecasts →</button>
+          </section>
+          <div id="sourceMessage" class="source-message"></div>
+          <dl class="runner-metrics">
+            <div><dt>Status</dt><dd id="runnerStatus">On course</dd></div>
+            <div><dt>Progress</dt><dd id="runnerProgress">—</dd></div>
+            <div><dt>Projected finish</dt><dd id="runnerFinish">—</dd></div>
+          </dl>
+          <div class="runner-card-foot">
+            <span id="runnerLocation"></span>
+            <button id="releaseButton" type="button">Resume auto</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="control-panel" aria-label="Map controls">
+        <div class="eyebrow-row">
+          <span class="eyebrow">FIND A RUNNER</span>
+          <span id="positionCount" class="small-stat">0 positions</span>
+        </div>
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="runnerSearch" type="search" autocomplete="off" placeholder="Name or bib number" aria-label="Search runners by name or bib" aria-controls="searchResults" aria-expanded="false">
+          <button id="clearSearch" class="clear-search" type="button" aria-label="Clear runner search">×</button>
+          <div id="searchResults" class="search-results" role="listbox" hidden></div>
+        </div>
+
+        <div class="director-label-row">
+          <div>
+            <span class="eyebrow">DIRECTOR</span>
+            <span id="directorMode" class="director-mode">AUTO</span>
+          </div>
+          <span id="directorCountdown" class="countdown">Next 18s</span>
+        </div>
+        <div class="director-controls">
+          <button id="leaderButton" type="button" class="control-button"><span aria-hidden="true">↗</span> Front</button>
+          <button id="randomButton" type="button" class="control-button"><span aria-hidden="true">⤨</span> Random</button>
+          <button id="fieldButton" type="button" class="control-button"><span aria-hidden="true">⌗</span> Field</button>
+          <button id="resumeButton" type="button" class="control-button primary"><span aria-hidden="true">▶</span> Resume Auto</button>
+        </div>
+
+        <div class="feed-strip">
+          <span><i class="feed-dot gps-live"></i><strong id="liveGpsCount">0</strong> live GPS</span>
+          <span><i class="feed-dot estimated"></i><strong id="estimatedCount">0</strong> estimated</span>
+          <span><i class="feed-dot stale"></i><strong id="staleGpsCount">0</strong> stale GPS</span>
+        </div>
+        <div class="bottom-details" aria-label="Checkpoint and race information">
+          <button id="checkpointButton" type="button" aria-haspopup="dialog" aria-controls="detailsDialog">Checkpoint times</button>
+          <button id="guideButton" type="button" aria-haspopup="dialog" aria-controls="detailsDialog">Aid &amp; cutoffs</button>
+        </div>
+      </section>
+
+      <section id="finishPanel" class="finish-panel" aria-label="Ten closest to the selected finish">
+        <div class="finish-heading"><h2>Finish watch</h2><span id="finishCount">0 / 10</span></div>
+        <label class="finish-race-label" for="finishRace">Selected race</label>
+        <select id="finishRace" aria-label="Race for finish watch"></select>
+        <p class="finish-help">Closest by remaining course distance. Approximate—not official placing.</p>
+        <p id="finishStatus" class="finish-status" role="status">Waiting for timing data.</p>
+        <div id="finishList" class="finish-list"></div>
+        <p id="finishExcluded" class="finish-help"></p>
+      </section>
+
+      <div class="map-legend" aria-label="Map marker legend">
+        <span><i class="legend-marker gps"></i>Exact GPS</span>
+        <span><i class="legend-marker recorded"></i>Recorded check-in</span>
+        <span><i class="legend-marker estimate"></i>Estimated location</span>
+        <span><i class="legend-marker stale"></i>Stale GPS</span>
+      </div>
+        </div>
+      </section>
+      <section id="displayPane" class="workspace-pane display-pane" aria-label="Course display">
+        <header class="display-heading">
+          <div id="viewControls" class="view-controls">
+        <div class="view-switch" role="group" aria-label="Course view">
+          <button id="mapViewButton" type="button" aria-pressed="true" aria-controls="mapCanvas">Map</button>
+          <button id="elevationViewButton" type="button" aria-pressed="false" aria-controls="elevationPanel">Elevation</button>
+        </div>
+          </div>
+          <button id="displayExpandButton" class="pane-expand" type="button" aria-controls="displayPane" aria-expanded="false">Expand display</button>
+        </header>
+        <div class="display-content">
+      <div id="mapCanvas" aria-label="Participant course map"></div>
+      <div id="mapNotice" class="map-notice" role="status" hidden><span id="mapNoticeText"></span><button id="retryMap" type="button">Retry map</button></div>
+      <section id="elevationPanel" class="elevation-panel" aria-label="Course elevation view" hidden>
+        <div class="elevation-heading"><div><span class="eyebrow">THE COURSE, SIDE ON</span><h2 id="elevationTitle">Elevation profile</h2></div></div>
+        <p id="elevationSubtitle" class="elevation-subtitle"></p>
+        <div id="elevationChart" class="elevation-chart"></div>
+        <dl id="elevationSummary" class="elevation-summary"></dl>
+        <div id="elevationRunner" class="elevation-runner" aria-live="polite"></div>
+        <div id="elevationCheckpoints" class="elevation-checkpoints" aria-label="Course checkpoints"></div>
+        <p id="elevationNote" class="elevation-note"></p>
+      </section>
+        </div>
+      </section>
+
+      <dialog id="detailsDialog" class="details-dialog" aria-labelledby="detailsTitle">
+        <div class="details-heading"><h2 id="detailsTitle">Checkpoint times</h2><button id="detailsClose" type="button" aria-label="Close details">Close ×</button></div>
+        <section id="checkpointContent" class="details-body">
+          <h3 id="checkpointIdentity"></h3>
+          <p id="checkpointStatus" class="details-note" role="status"></p>
+          <p class="details-note">Recorded times are official chip reads, with seconds and dates. Forecasts (~) are approximate Mountain Time arrivals, not passages; later forecasts are less certain. Elapsed starts at the participant’s own chip start.</p>
+          <div id="checkpointList"></div>
+        </section>
+        <section id="guideContent" class="details-body" hidden>
+          <p class="eyebrow">OFFICIAL 2026 RACE GUIDE · NOT RUNNER READS</p>
+          <h3>28K · Saturday, September 12</h3>
+          <p class="details-note">Cutoffs are the same for every wave. Distances below are the organizer’s published miles, not the map’s measured route length.</p>
+          <table class="guide-table">
+            <caption>28K aid stations, start window and cutoffs · Mountain Time</caption>
+            <thead><tr><th scope="col">Checkpoint</th><th scope="col">Miles</th><th scope="col">Start / cutoff</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Wave start</th><td>—</td><td>7:20–8:30 AM <small>Start window</small></td></tr>
+              <tr><th scope="row">Headwaters</th><td>3.9</td><td>10:25 AM</td></tr>
+              <tr><th scope="row">Swiftcurrent</th><td>9.1</td><td>12:25 PM</td></tr>
+              <tr><th scope="row">Summit</th><td>10.4</td><td>1:45 PM</td></tr>
+              <tr><th scope="row">Moosetracks</th><td>14.6</td><td>3:25 PM</td></tr>
+              <tr><th scope="row">Finish</th><td>17.6</td><td>4:40 PM</td></tr>
+            </tbody>
+          </table>
+          <h3>Full official table · all races</h3>
+          <p class="details-note">Includes next aid, climbing/descent, bathrooms, spectator access and drop bags. “First Runner Estimated Time” is an organizer estimate—not a recorded passage.</p>
+          <label class="chart-zoom"><input id="guideZoom" type="checkbox"> Enlarge table <span>Scroll sideways when enlarged</span></label>
+          <div id="guideImageWrap" class="guide-image-wrap" tabindex="0" role="region" aria-label="Official chart; scroll to read all columns when enlarged">
+            <img src="rut-2026-aid-chart.png" width="1606" height="1200" alt="The Rut’s official 2026 aid-station and cutoff table for VK, 11K, 21K, 28K, 50K and Runts Run. Readable 28K start and cutoff times appear above; full-size original is linked below.">
+          </div>
+          <p class="details-note">Source: <a href="https://runtherut.com/28k-race-details/" target="_blank" rel="noopener noreferrer">The Rut · 28K race details</a> · <a href="https://runtherut.com/wp-content/uploads/2026/08/26-Aid-Chart.png" target="_blank" rel="noopener noreferrer">Open original table</a>. Follow race officials for changes.</p>
+        </section>
+      </dialog>
+
+      <div id="loadingOverlay" class="loading-overlay" role="status">
+        <div class="loading-ring"></div>
+        <strong>Loading course and timing data</strong>
+        <span>This can take a few seconds on the first launch.</span>
+      </div>
+
+      <div id="toast" class="toast" role="status" hidden></div>
+    </main>
+  </div>
+</body>
+</html>

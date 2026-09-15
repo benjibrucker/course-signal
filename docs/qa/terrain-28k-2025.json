@@ -1,0 +1,88 @@
+{
+  "event_id": "the-rut-28k-2025",
+  "generated_at": "2026-09-12T03:38:19.057389+00:00",
+  "model": "terrain-pilot-v1",
+  "source_urls": [
+    "https://api.competitivetiming.com/events/the-rut-28k-2025/results",
+    "https://api.competitivetiming.com/events/the-rut-28k-2025",
+    "https://api.competitivetiming.com/course-maps/event/the-rut-28k-2025?include=points"
+  ],
+  "qualified_finishers": 622,
+  "skipped_predictions": 0,
+  "terrain": {
+    "count": 2458,
+    "median_absolute_minutes": 15.95,
+    "mean_absolute_minutes": 18.45,
+    "p90_absolute_minutes": 37.15
+  },
+  "existing_checkpoint_model": {
+    "count": 2458,
+    "median_absolute_minutes": 24.28,
+    "mean_absolute_minutes": 28.26,
+    "p90_absolute_minutes": 51.35
+  },
+  "by_next_checkpoint": {
+    "2": {
+      "terrain": {
+        "count": 614,
+        "median_absolute_minutes": 32.55,
+        "mean_absolute_minutes": 33.22,
+        "p90_absolute_minutes": 49.33
+      },
+      "baseline": {
+        "count": 614,
+        "median_absolute_minutes": 40.61,
+        "mean_absolute_minutes": 41.23,
+        "p90_absolute_minutes": 58.53
+      }
+    },
+    "3": {
+      "terrain": {
+        "count": 612,
+        "median_absolute_minutes": 6.16,
+        "mean_absolute_minutes": 7.65,
+        "p90_absolute_minutes": 15.74
+      },
+      "baseline": {
+        "count": 612,
+        "median_absolute_minutes": 41.81,
+        "mean_absolute_minutes": 42.14,
+        "p90_absolute_minutes": 54.81
+      }
+    },
+    "4": {
+      "terrain": {
+        "count": 613,
+        "median_absolute_minutes": 19.59,
+        "mean_absolute_minutes": 20.18,
+        "p90_absolute_minutes": 29.49
+      },
+      "baseline": {
+        "count": 613,
+        "median_absolute_minutes": 11.78,
+        "mean_absolute_minutes": 12.32,
+        "p90_absolute_minutes": 20.28
+      }
+    },
+    "5": {
+      "terrain": {
+        "count": 619,
+        "median_absolute_minutes": 12.74,
+        "mean_absolute_minutes": 12.77,
+        "p90_absolute_minutes": 19.49
+      },
+      "baseline": {
+        "count": 619,
+        "median_absolute_minutes": 17.81,
+        "mean_absolute_minutes": 17.45,
+        "p90_absolute_minutes": 24.46
+      }
+    }
+  },
+  "notes": [
+    "Aggregate historical replay; no runner identities or split histories stored.",
+    "Only prefix checkpoints enter each prediction; next checkpoint is withheld.",
+    "Completed, nonflagged, nonanonymous cohort only: not proof of race-day accuracy or dropout behavior.",
+    "Same-event geometry is used for this replay; no prior-year checkpoint remapping or calibration applied."
+  ]
+}

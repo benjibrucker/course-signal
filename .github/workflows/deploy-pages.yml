@@ -1,0 +1,61 @@
+name: Test and deploy Course Signal
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: course-signal-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Regression tests
+        run: |
+          python3 -m unittest discover -q
+          node --test test_*.cjs
+          node --check app.js
+          node --check course_signal_shell.js
+          node --check results_model.js
+          node --check results_view.js
+          python3 -m py_compile server.py api/index.py competitive_catalog.py completed_results.py result_analysis.py
+
+      - name: Build sanitized Pages artifact
+        run: python3 build_static.py
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

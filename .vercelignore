@@ -1,0 +1,10 @@
+_site
+.git
+__pycache__
+*.pyc
+*.md
+test_*
+.env*
+.hermes
+.DS_Store
+Start Course Signal.command

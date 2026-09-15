@@ -1,0 +1,74 @@
+{
+  "event_id": "the-rut-21k-2026",
+  "generated_at": "2026-09-12T03:38:21.621353+00:00",
+  "model": "terrain-pilot-v1",
+  "source_urls": [
+    "https://api.competitivetiming.com/events/the-rut-21k-2026/results",
+    "https://api.competitivetiming.com/events/the-rut-21k-2026",
+    "https://api.competitivetiming.com/course-maps/event/the-rut-21k-2026?include=points"
+  ],
+  "qualified_finishers": 650,
+  "skipped_predictions": 0,
+  "terrain": {
+    "count": 1935,
+    "median_absolute_minutes": 4.37,
+    "mean_absolute_minutes": 6.74,
+    "p90_absolute_minutes": 15.85
+  },
+  "existing_checkpoint_model": {
+    "count": 1935,
+    "median_absolute_minutes": 9.52,
+    "mean_absolute_minutes": 11.3,
+    "p90_absolute_minutes": 20.23
+  },
+  "by_next_checkpoint": {
+    "2": {
+      "terrain": {
+        "count": 644,
+        "median_absolute_minutes": 2.26,
+        "mean_absolute_minutes": 2.97,
+        "p90_absolute_minutes": 6.48
+      },
+      "baseline": {
+        "count": 644,
+        "median_absolute_minutes": 7.7,
+        "mean_absolute_minutes": 7.47,
+        "p90_absolute_minutes": 9.88
+      }
+    },
+    "3": {
+      "terrain": {
+        "count": 645,
+        "median_absolute_minutes": 12.12,
+        "mean_absolute_minutes": 13.42,
+        "p90_absolute_minutes": 22.79
+      },
+      "baseline": {
+        "count": 645,
+        "median_absolute_minutes": 8.74,
+        "mean_absolute_minutes": 8.88,
+        "p90_absolute_minutes": 14.56
+      }
+    },
+    "4": {
+      "terrain": {
+        "count": 646,
+        "median_absolute_minutes": 2.78,
+        "mean_absolute_minutes": 3.81,
+        "p90_absolute_minutes": 7.53
+      },
+      "baseline": {
+        "count": 646,
+        "median_absolute_minutes": 17.2,
+        "mean_absolute_minutes": 17.53,
+        "p90_absolute_minutes": 25.04
+      }
+    }
+  },
+  "notes": [
+    "Aggregate historical replay; no runner identities or split histories stored.",
+    "Only prefix checkpoints enter each prediction; next checkpoint is withheld.",
+    "Completed, nonflagged, nonanonymous cohort only: not proof of race-day accuracy or dropout behavior.",
+    "Same-event geometry is used for this replay; no prior-year checkpoint remapping or calibration applied."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "includeFiles": "{server.py,competitive_catalog.py,completed_results.py,result_analysis.py,finish_metrics.py,terrain_model.py,build_static.py}",
+      "excludeFiles": "{_site/**,.git/**,.hermes/**,__pycache__/**,test_*,*.md,vendor/**}"
+    }
+  },
+  "routes": [
+    {"src": "^/api/results/(search|runner)$", "dest": "/api?route=results/$1"},
+    {"src": "^/api/(health|bootstrap|live|catalog|event)$", "dest": "/api?route=$1"},
+    {"src": "^/.*$", "dest": "/api?route=not-found"}
+  ]
+}

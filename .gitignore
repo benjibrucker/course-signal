@@ -1,0 +1,11 @@
+_site/
+__pycache__/
+*.pyc
+.DS_Store
+.vercel/
+.venv/
+.env*
+.vercel
+*.har
+participant-snapshots/
+results-cache/
