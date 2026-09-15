@@ -51,7 +51,7 @@ Every other race/event route fails closed.
 
 ## Run locally
 
-1. Double-click `/Users/benjibook/Documents/Course Signal/Start Course Signal.command`.
+1. Clone the repository and double-click `Start Course Signal.command`.
 2. Leave Terminal open.
 3. Open `http://127.0.0.1:8765/` if the browser does not open.
 4. Press **Control-C** to stop.
@@ -59,7 +59,7 @@ Every other race/event route fails closed.
 Manual start:
 
 ```bash
-cd "/Users/benjibook/Documents/Course Signal"
+cd course-signal
 python3 server.py --open
 ```
 
@@ -68,7 +68,7 @@ The local server binds only to `127.0.0.1`.
 ## Verification
 
 ```bash
-cd "/Users/benjibook/Documents/Course Signal"
+cd course-signal
 python3 -m unittest discover -q
 node --test test_*.cjs
 node --check app.js
